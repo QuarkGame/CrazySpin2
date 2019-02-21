@@ -24,6 +24,10 @@ display = pygame.display.set_mode((WIDTH, HEIGHT))
 # name the window
 pygame.display.set_caption("Crazy Spin 2")
 
+
+AI = False
+
+
 class GameObj(pygame.sprite.Sprite):
 
     family = pygame.sprite.RenderUpdates()
@@ -45,16 +49,25 @@ class Ball(GameObj):
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH / 2, HEIGHT / 2)
         Ball.family.add(self)
-        self.x = 3
-        self.y = 3
+        self.x = 8
+        self.y = 8
 
     def update(self):
         if self.rect.y - self.radius * 2 < 0 or self.rect.y + self.radius * 2 > HEIGHT:
             self.y = -self.y
         if pygame.sprite.collide_rect(self, PlayerPad.family.sprite) or pygame.sprite.collide_rect(self, EnemyPad.family.sprite):
             self.x = -self.x
+        if self.rect.x < 0 or self.rect.x > WIDTH:
+            self.respawn()
+            # self.x += 0.1 if self.x >=0 else -0.1
+            # self.y += 0.1 if self.y >=0 else -0.1
         self.rect.x += self.x
         self.rect.y += self.y
+
+    def respawn(self):
+        self.rect.center = WIDTH/2, HEIGHT/2
+        PlayerPad.family.sprite.reset()
+        EnemyPad.family.sprite.reset()
 
 
 class PlayerPad(GameObj):
@@ -83,6 +96,9 @@ class PlayerPad(GameObj):
     def update(self):
         pass
 
+    def reset(self):
+        self.rect.center = (self.width / 2, HEIGHT / 2)
+
 
 class EnemyPad(GameObj):
 
@@ -108,16 +124,20 @@ class EnemyPad(GameObj):
 
 
     def update(self):
-        self.ai()
+        if AI:
+            self.ai()
 
 
     def ai(self):
         if Ball.family.sprite.rect.y > self.rect.y:
-            self.move(3)
+            self.move(5)
         elif Ball.family.sprite.rect.y < self.rect.y:
-            self.move(-3)
+            self.move(-5)
         else:
             pass
+
+    def reset(self):
+        self.rect.center = (WIDTH - self.width / 2, HEIGHT / 2)
 
 
 def game():
@@ -131,9 +151,14 @@ def game():
             pygame.quit()
             sys.exit()
         if keys[pygame.K_w]:
-            PlayerPad.family.sprite.move(-3)
+            PlayerPad.family.sprite.move(-5)
         if keys[pygame.K_s]:
-            PlayerPad.family.sprite.move(3)
+            PlayerPad.family.sprite.move(5)
+        if not AI:
+            if keys[pygame.K_UP]:
+                EnemyPad.family.sprite.move(-5)
+            if keys[pygame.K_DOWN]:
+                EnemyPad.family.sprite.move(5)
 
         GameObj.family.draw(display)
         GameObj.family.update()
