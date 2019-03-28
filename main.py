@@ -26,7 +26,7 @@ display = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Crazy Spin 2")
 
 
-AI = False
+AI = True
 
 
 class GameObj(pygame.sprite.Sprite):
@@ -131,9 +131,9 @@ class EnemyPad(GameObj):
 
     def ai(self):
         if Ball.family.sprite.rect.y > self.rect.y:
-            self.move(5)
+            self.move(8)
         elif Ball.family.sprite.rect.y < self.rect.y:
-            self.move(-5)
+            self.move(-8)
         else:
             pass
 
