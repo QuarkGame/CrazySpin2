@@ -71,6 +71,24 @@ class Ball(GameObj):
         EnemyPad.family.sprite.reset()
 
 
+class BallFuture(GameObj):
+    radius = 10
+
+    family = pygame.sprite.GroupSingle()
+
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((2 * self.radius, 2 * self.radius))
+        pygame.draw.circle(self.image, BLUE, (self.radius, self.radius), self.radius)
+        self.rect = self.image.get_rect()
+        self.rect.center = (WIDTH / 2, HEIGHT / 2)
+        BallFuture.family.add(self)
+
+    def update(self):
+        self.rect.x = Ball.family.sprite.rect.x + Ball.family.sprite.x
+        self.rect.y = Ball.family.sprite.rect.y + Ball.family.sprite.y
+
+
 class PlayerPad(GameObj):
 
     height = 100
@@ -143,6 +161,7 @@ class EnemyPad(GameObj):
 
 def game():
     Ball()
+    BallFuture()
     PlayerPad()
     EnemyPad()
     while True:
